@@ -2,6 +2,8 @@ import os
 
 from argparse import ArgumentParser
 
+import torch
+
 from unet.model import Model
 from unet.dataset import Image2D
 
@@ -18,6 +20,6 @@ model = torch.load(args.model_path)
 if not os.path.exists(args.results_path):
     os.makedirs(args.results_path)
 
-model = Model(unet, checkpoint_folder=args.results_path, device=args.device)
+model = Model(model, loss=None, optimizer=None, checkpoint_folder=args.results_path, device=args.device)
 
-model.predict_dataset(predict_dataset, args.result_path)
+model.predict_dataset(predict_dataset, args.results_path)

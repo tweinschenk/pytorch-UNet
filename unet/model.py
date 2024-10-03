@@ -8,6 +8,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 
 from skimage import io
+import matplotlib.pyplot as plt
 
 from time import time
 
@@ -193,7 +194,7 @@ class Model:
                 loss = val_logs['val_loss']
             else:
                 loss = train_logs['train_loss']
-
+                val_logs = {}
             if save_model:
                 # saving best model
                 if loss < min_loss:
@@ -245,5 +246,6 @@ class Model:
 
             X_batch = Variable(X_batch.to(device=self.device))
             y_out = self.net(X_batch).cpu().data.numpy()
-
-            io.imsave(os.path.join(export_path, image_filename), y_out[0, 1, :, :])
+            #plt.imshow(y_out[0,1,:,:])
+            #plt.show()
+            io.imsave(os.path.join(export_path, image_filename), y_out[0, 1, :, :].astype(np.uint8))
