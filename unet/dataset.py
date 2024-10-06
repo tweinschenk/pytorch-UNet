@@ -10,6 +10,7 @@ from torchvision.transforms import functional as F
 
 from typing import Callable
 
+from os.path import isfile, join
 
 def to_long_tensor(pic):
     # handle numpy array
@@ -121,7 +122,7 @@ class ImageToImage2D(Dataset):
         self.dataset_path = dataset_path
         self.input_path = os.path.join(dataset_path, 'images')
         self.output_path = os.path.join(dataset_path, 'masks')
-        self.images_list = os.listdir(self.input_path)
+        self.images_list = [f for f in os.listdir(self.input_path) if isfile(join(self.input_path, f))]
         self.one_hot_mask = one_hot_mask
 
         if joint_transform:
@@ -135,6 +136,7 @@ class ImageToImage2D(Dataset):
 
     def __getitem__(self, idx):
         image_filename = self.images_list[idx]
+        print(image_filename)
         # read image
         image = io.imread(os.path.join(self.input_path, image_filename))
         # read mask image
