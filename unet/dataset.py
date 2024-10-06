@@ -136,7 +136,6 @@ class ImageToImage2D(Dataset):
 
     def __getitem__(self, idx):
         image_filename = self.images_list[idx]
-        print(image_filename)
         # read image
         image = io.imread(os.path.join(self.input_path, image_filename))
         # read mask image
