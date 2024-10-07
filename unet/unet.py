@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .blocks import *
+#from pytorch_nndct.utils import register_custom_op
 
 
 class UNet2D(nn.Module):
@@ -37,7 +38,8 @@ class UNet2D(nn.Module):
         for dec_layer_idx, dec_layer in enumerate(self.decoder_layers):
             x_opposite = x_enc[-1-dec_layer_idx]
             x_cat = torch.cat(
-                [pad_to_shape(x_dec[-1], x_opposite.shape), x_opposite],
+                #[pad_to_shape(x_dec[-1], x_opposite.shape), x_opposite], #comment this line for quantization as padding is not available on the dpu
+                [x_dec[-1], x_opposite], #uncomment this line for quantization
                 dim=1
             )
             x_dec.append(dec_layer(x_cat))
@@ -91,6 +93,25 @@ class UNet3D(nn.Module):
             return x_enc + x_dec
 
 
+"""
+@register_custom_op("pad_to_shape", attrs_list=['shp'])
+def pad_to_shape(ctx, this, shp):
+    """  """
+    Pads this image with zeroes to shp.
+    Args:
+        this: image tensor to pad
+        shp: desired output shape
+
+    Returns:
+        Zero-padded tensor of shape shp.
+    """ """
+    if len(shp) == 4:
+        pad = (0, shp[3] - this.shape[3], 0, shp[2] - this.shape[2])
+    elif len(shp) == 5:
+        pad = (0, shp[4] - this.shape[4], 0, shp[3] - this.shape[3], 0, shp[2] - this.shape[2])
+    return F.pad(this, pad)
+
+"""
 def pad_to_shape(this, shp):
     """
     Pads this image with zeroes to shp.
@@ -106,3 +127,11 @@ def pad_to_shape(this, shp):
     elif len(shp) == 5:
         pad = (0, shp[4] - this.shape[4], 0, shp[3] - this.shape[3], 0, shp[2] - this.shape[2])
     return F.pad(this, pad)
+
+
+"""
+@register_custom_op("aten::pad", attrs_list=['pad'])
+def pad(ctx, this, pad):
+    return F.pad(this, pad)
+
+"""
