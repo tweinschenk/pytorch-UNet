@@ -80,7 +80,7 @@ def run_main():
                     help='Quantization mode (calib or test). Default is calib')
     ap.add_argument('-b', '--batchsize', type=int, default=10,
                     help='Testing batchsize - must be an integer. Default is 10')
-    ap.add_argument('-o', '--output_folder', type=str, default='./build/compiled_model', help='Path to output folder')
+    ap.add_argument('-o', '--output_folder', type=str, default='./build/quant_model/', help='Path to output folder')
     args = ap.parse_args()
 
     print("\n")
