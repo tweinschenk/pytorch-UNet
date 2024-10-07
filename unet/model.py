@@ -245,7 +245,9 @@ class Model:
                 image_filename = '%s.png' % str(batch_idx + 1).zfill(3)
 
             X_batch = Variable(X_batch.to(device=self.device))
-            y_out = self.net(X_batch).cpu().data.numpy()
+            y_out = self.net(X_batch).cpu().data.numpy() * 255
             #plt.imshow(y_out[0,1,:,:])
             #plt.show()
-            io.imsave(os.path.join(export_path, image_filename), y_out[0, 1, :, :].astype(np.uint8))
+            io.imsave(os.path.join(export_path, "channel_0_" + image_filename), y_out[0, 0, :, :].astype(np.uint8))
+            io.imsave(os.path.join(export_path, "channel_1_" +image_filename), y_out[0, 1, :, :].astype(np.uint8))
+            
