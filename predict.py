@@ -1,7 +1,7 @@
 import os
 
 from argparse import ArgumentParser
-
+import time
 import torch
 
 from unet.model import Model
@@ -23,4 +23,11 @@ if not os.path.exists(args.results_path):
 
 model = Model(model, loss=None, optimizer=None, checkpoint_folder=args.results_path, device=args.device)
 
+time1 = time.time()
 model.predict_dataset(predict_dataset, args.results_path)
+time2 = time.time()
+timetotal = time2 - time1
+fps = float(len(predict_dataset) / timetotal)
+print(" ")
+print("FPS=%.2f, total frames = %.0f, time=%.4f seconds" %(fps, len(predict_dataset), timetotal))
+print(" ")
