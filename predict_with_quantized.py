@@ -1,5 +1,6 @@
 import numpy as np
 import argparse
+import time
 
 import torch
 from skimage import io
@@ -37,12 +38,20 @@ def predict(dataset_path, float_model_path, quant_model_path, output_path):
     quantizer = torch_quantizer(quant_mode, model, shape, output_dir=quant_model_path)
     quantized_model = quantizer.quant_model
 
+    time1 = time.time()
     for img, mask, names in data_loader:
         img = img.to(device)
         output = quantized_model(img).cpu().data.numpy()
         output = output * 255
         io.imsave(output_path + "channel_0_" + names[0], output[0,1,:,:].astype(np.uint8))
         io.imsave(output_path + "channel_1_" + names[0], output[0,0,:,:].astype(np.uint8))
+    time2 = time.time()
+    timetotal = time2 - time1
+    fps = float(len(dataset) / timetotal)
+    print(" ")
+    print("FPS=%.2f, total frames = %.0f, time=%.4f seconds" %(fps, len(dataset), timetotal))
+    print(" ")
+
 
 
 def run_main():
@@ -55,7 +64,7 @@ def run_main():
     ap.add_argument('--quant_model_folder', type=str, default='./build/quant_model', help='Path to output folder')
     ap.add_argument('--image_save_folder', type=str, default='./images_folder/inference_quant/')
     args = ap.parse_args()
-
+    
     predict(dataset_path=args.dset_dir, float_model_path=args.model_path,
             quant_model_path=args.quant_model_folder, output_path=args.image_save_folder)
 
